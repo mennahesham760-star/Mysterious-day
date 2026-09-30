@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>A Little Mystery 🤍</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#eee7dc;font-family:ui-rounded,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#273128;display:flex;justify-content:center;align-items:center;padding:18px}
+.game{width:min(100%,430px)}
+.card{min-height:680px;background:#faf5ef;border:1px solid #ddd5c8;border-radius:28px;padding:38px 25px 22px;box-shadow:0 18px 45px rgba(50,42,32,.12);position:relative;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.tape{position:absolute;top:13px;left:50%;transform:translateX(-50%) rotate(-2deg);width:105px;height:25px;background:#dfcfb3;opacity:.7}
+.num{font-size:12px;letter-spacing:.17em;text-transform:uppercase;color:#788174;font-weight:800;padding-top:18px}
+h1{font-size:45px;line-height:1.02;letter-spacing:-.045em;margin:14px 0 25px}
+.text{font-size:18px;line-height:1.65}
+.highlight{background:#dce5d7;padding:2px 8px;border-radius:9px}
+.note{margin-top:25px;background:#efd9d7;border-radius:17px;padding:16px 18px;font-size:16px;line-height:1.5;transform:rotate(-1deg)}
+.doodles{font-size:28px;letter-spacing:9px;margin-top:25px}
+.spin{font-size:78px;text-align:center;margin:8px 0 20px;animation:float 2s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-5px) rotate(4deg)}}
+.bottom{margin-top:25px}
+button{width:100%;min-height:56px;border:0;border-radius:18px;background:#273128;color:#fff;font-size:17px;font-weight:800;cursor:pointer}
+button:active{transform:scale(.98)}
+.progress{display:flex;justify-content:center;gap:5px;margin-top:15px}
+.dot{width:7px;height:7px;border-radius:9px;background:#d2cbc0}.dot.active{width:22px;background:#65755f}
+.hint{text-align:center;color:#7a8178;font-size:12px;margin-top:9px}
+.final{background:#dce5d7}
+.final .note{background:#f0ddd8}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+<main class="game">
+<section class="card" id="card">
+<div class="tape"></div>
+<div id="content"></div>
+<div class="bottom">
+<button id="next">Open card ✨</button>
+<div class="progress" id="progress"></div>
+<div class="hint" id="hint">Tap to reveal what comes next</div>
+</div>
+</section>
+</main>
+<script>
+const cards=[
+{n:"01 · THE BEGINNING",t:"Here we go… 🤍",b:'Today is <span class="highlight">yours.</span><br><br>But there’s one tiny catch… 👀<br><br>You don’t get to know what comes next.',q:"All you have to do is trust me. Follow the game. And enjoy the ride.",d:"♡ ✦ ♡"},
+{n:"02 · THE RULES",t:"Okay… listen up.",b:'There are only a few rules.<br><br><span class="highlight">You choose. Fate decides.</span><br><br>No overthinking. No changing your mind. No cheating. 😉',q:"And most importantly… don’t ask me where we’re going.",d:"✦ ♡ →"},
+{n:"03 · ROUND ONE",t:"First spin! 🎡",b:"This is where the day officially begins.<br><br>Take the phone.<br><br>Get ready to make your first move.",q:"Let’s see what fate has planned for you…",d:"↻ ✦ ♡",spin:true},
+{n:"04 · DON’T PANIC",t:"Spinning… 👀",b:"Okay, okay…<br><br>Don’t try to guess.<br>Don’t try to negotiate.<br><br>Just let it happen.",q:"Whatever happens next… you agreed to this. 😌",d:"♡ · · · ✦",spin:true},
+{n:"05 · THE REVEAL",t:"The result is…",b:"Well…<br><br>That is officially your choice now.",q:"No second spin. No changing it. We’re committed. 🔒",d:"? ✦ ?"},
+{n:"06 · LOCKED IN",t:"Interesting choice… 👀",b:"I’m not going to tell you what I think about that choice.",q:"You picked it. I planned for it. Now we go. 🤍",d:"♡ 🔒 ♡"},
+{n:"07 · ROUND TWO",t:"You thought we were done?",b:"Cute. 😌<br><br>There’s still more to the game.<br><br>Another choice. Another surprise.",q:"Ready to trust your luck again?",d:"🎲 ✦ 🎲",spin:true},
+{n:"08 · A LITTLE CHALLENGE",t:"One tiny challenge…",b:'At some point today, you might have to choose between <span class="highlight">thinking</span> and <span class="highlight">trusting.</span>',q:"Choose carefully. I’m watching. 👀",d:"♡ ? ✦"},
+{n:"09 · ALMOST THERE",t:"You’re doing great. 🤍",b:"By now, you probably have absolutely no idea what I planned.",q:"Good. That means the mystery is working exactly as intended.",d:"✦ ♡ ✦"},
+{n:"10 · THE END… OR IS IT?",t:"Let’s go. ✨",b:"No more clues.<br>No more questions.<br><br>Just enjoy the day, the surprises, and the little moments along the way.",q:'<strong>Your mystery day starts now. 🤍</strong>',d:"♡ ✦ ♡",final:true}
+];
+let i=0;
+const content=document.getElementById("content"), card=document.getElementById("card"), next=document.getElementById("next"), progress=document.getElementById("progress"), hint=document.getElementById("hint");
+function render(){
+ const c=cards[i];
+ card.classList.toggle("final",!!c.final);
+ content.innerHTML=`<div class="num">${c.n}</div><h1>${c.t}</h1>${c.spin?'<div class="spin">🎡</div>':''}<div class="text">${c.b}</div><div class="note">${c.q}</div><div class="doodles">${c.d}</div>`;
+ progress.innerHTML=cards.map((_,x)=>`<span class="dot ${x===i?'active':''}"></span>`).join("");
+ next.textContent=i===cards.length-1?"🤍 Enjoy your day":"Open card "+(i+2)+" →";
+ hint.textContent=i===cards.length-1?"Now put the phone away. 🤍":"Tap to reveal the next card";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+next.onclick=()=>{if(i<cards.length-1){i++;render()}else{next.disabled=true;next.textContent="✨ Game unlocked";hint.textContent="The game is yours now."}};
+render();
+</script>
+</body>
+</html>
